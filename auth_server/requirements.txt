@@ -1,0 +1,5 @@
+Flask==1.1.2
+PyJWT==1.7.1
+cryptography==3.3.1
+auth==0.5.3
+pyOpenSSL==20.0.0
