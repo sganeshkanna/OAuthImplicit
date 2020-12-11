@@ -1,19 +1,33 @@
 import json
-#import ssl
+import ssl
 import urllib.parse as urlparse
 
 from auth import (authenticate_user_credentials, generate_access_token,  
                   verify_client_info, JWT_LIFE_SPAN)
 from flask import Flask, redirect, render_template, request
 from urllib.parse import urlencode
+#from OpenSSL import SSL
+
+#context = SSL.Context(SSL.TLSv1_2_METHOD)
+#context.use_privatekey_file('host.key')
+#context.use_certificate_file('host.cert')
+
+context = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
+context.load_cert_chain('host.cert','host.key')
+
 
 app = Flask(__name__)
+
+
+
 
 @app.route('/auth')
 def auth():
   # Describe the access request of the client and ask user for approval
   client_id = request.args.get('client_id')
   redirect_url = request.args.get('redirect_url')
+  print(client_id)
+  print(redirect_url)
 
   if None in [ client_id, redirect_url ]:
     return json.dumps({
@@ -76,4 +90,4 @@ if __name__ == '__main__':
   #context = ssl.SSLContext(ssl.PROTOCOL_TLSv1_2)
   #context.load_cert_chain('domain.crt', 'domain.key')
   #app.run(port = 5000, debug = True, ssl_context = context)
-  app.run(port = 5001, debug = True)
+  app.run(host='0.0.0.0',port = 443, debug = True, ssl_context=context)
