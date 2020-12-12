@@ -25,7 +25,7 @@ app = Flask(__name__)
 def auth():
   # Describe the access request of the client and ask user for approval
   client_id = request.args.get('client_id')
-  redirect_url = request.args.get('redirect_url')
+  redirect_url = request.args.get('redirect_uri')
   print(client_id)
   print(redirect_url)
 
