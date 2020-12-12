@@ -26,6 +26,7 @@ def auth():
   # Describe the access request of the client and ask user for approval
   client_id = request.args.get('client_id')
   redirect_url = request.args.get('redirect_uri')
+  state = request.args.get('state')
   print(client_id)
   print(redirect_url)
 
@@ -41,15 +42,17 @@ def auth():
 
   return render_template('Implicit_grant_access.html',
                          client_id = client_id,
-                         redirect_url = redirect_url)
+                         redirect_url = redirect_url,state=state)
 
-def process_redirect_url(redirect_url, new_entries):
+def process_redirect_url(redirect_url,new_entries):
   # Prepare the redirect URL
   url_parts = list(urlparse.urlparse(redirect_url))
+  print(list)
   queries = dict(urlparse.parse_qsl(url_parts[4]))
   queries.update(new_entries)
   url_parts[4] = urlencode(queries)
   url = urlparse.urlunparse(url_parts)
+  print(url)
   return url
 
 @app.route('/signin', methods = ['POST'])
@@ -59,6 +62,7 @@ def signin():
   password = request.form.get('password')
   client_id = request.form.get('client_id')
   redirect_url = request.form.get('redirect_url')
+  state = request.form.get('state')
 
   if None in [username, password, client_id, redirect_url]:
     return json.dumps({
@@ -79,10 +83,11 @@ def signin():
 
   print(process_redirect_url(redirect_url, {"1":"2"}))
 
-  return redirect(process_redirect_url(redirect_url, {
+  return redirect(process_redirect_url(redirect_url,{
     'access_token': access_token,
     'token_type': 'JWT',
-    'expires_in': JWT_LIFE_SPAN
+    'expires_in': JWT_LIFE_SPAN,
+    'state':state
     }), code = 303)
 
 
@@ -90,4 +95,4 @@ if __name__ == '__main__':
   #context = ssl.SSLContext(ssl.PROTOCOL_TLSv1_2)
   #context.load_cert_chain('domain.crt', 'domain.key')
   #app.run(port = 5000, debug = True, ssl_context = context)
-  app.run(host='0.0.0.0',port = 443, debug = True, ssl_context=context)
+  app.run(host='0.0.0.0',port = 443, debug = True,ssl_context = context)
