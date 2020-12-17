@@ -20,6 +20,10 @@ app = Flask(__name__)
 
 
 
+@app.route('validate')
+def validate():
+  print(request.args.get('access_token')
+
 
 @app.route('/auth')
 def auth():
@@ -53,6 +57,8 @@ def process_redirect_url(redirect_url,new_entries):
   url_parts[4] = urlencode(queries)
   url = urlparse.urlunparse(url_parts)
   print(url)
+  url = url.replace("?","#")
+  #url = url.replace('&access_token','#access_token')
   return url
 
 @app.route('/signin', methods = ['POST'])
@@ -85,7 +91,7 @@ def signin():
 
   return redirect(process_redirect_url(redirect_url,{
     'access_token': access_token,
-    'token_type': 'JWT',
+    'token_type': 'bearer',
     'expires_in': JWT_LIFE_SPAN,
     'state':state
     }), code = 303)
